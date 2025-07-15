@@ -7,23 +7,19 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 class RouteServiceProvider extends ServiceProvider
 {
     /**
-     * The path to the "home" route for your application.
-     *
-     * Typically, users are redirected here after authentication.
-     *
-     * @var string
+     * Ruta por defecto después de login (ya no la usaremos directamente).
      */
     public const HOME = '/dashboard';
 
     /**
-     * Define your route model bindings, pattern filters, and other route configuration.
-     *
-     * @return void
+     * Configuración de rutas.
      */
+
     public function boot()
     {
         $this->configureRateLimiting();
@@ -35,13 +31,28 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+
+            // ✅ Ruta de redirección según el tipo de usuario
+            Route::get('/redirect', function () {
+                $user = Auth::user();
+
+                switch ($user->tipo_usuario) {
+                    case 'admin':
+                        return redirect('/admin/panel');
+                    case 'profesor':
+                        return redirect('/profesor/inicio');
+                    case 'estudiante':
+                        return redirect('/estudiante/inicio');
+                    default:
+                        return redirect('/');
+                }
+            })->middleware(['auth'])->name('redirect');
         });
     }
 
+
     /**
-     * Configure the rate limiters for the application.
-     *
-     * @return void
+     * Limitadores de velocidad.
      */
     protected function configureRateLimiting()
     {

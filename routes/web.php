@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\EstudianteController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +17,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::middleware(['auth', 'rol:admin'])->group(function () {
+    Route::get('/admin/panel', [AdminController::class, 'index'])->name('admin.panel');
+});
+Route::middleware(['auth', 'rol:estudiante'])->group(function () {
+    Route::get('/estudiante/inicio', [EstudianteController::class, 'index'])->name('estudiante.inicio');
 });
 
 Route::get('/dashboard', function () {
