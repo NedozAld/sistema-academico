@@ -15,7 +15,8 @@
                         <label for="idest" class="block font-bold mb-1">Estudiante:</label>
                         <select name="idest" class="w-full border border-gray-300 rounded px-3 py-2" required>
                             @foreach ($estudiantes as $est)
-                                <option value="{{ $est->idest }}">{{ $est->nombresest }} {{ $est->apellidosest }}</option>
+                                <option value="{{ $est->idest }}">{{ $est->nombresest }} {{ $est->apellidosest }}
+                                </option>
                             @endforeach
                         </select>
                     </div>

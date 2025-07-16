@@ -12,6 +12,12 @@ use Illuminate\Http\Request;
 
 class MatriculaController extends Controller
 {
+    public function index()
+    {
+        $matriculas = Matricula::with(['estudiante', 'periodo'])->get();
+        return view('matriculas.index', compact('matriculas'));
+    }
+
     public function create()
     {
         return view('matriculas.create', [
@@ -24,15 +30,13 @@ class MatriculaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'idest' => 'required',
-            'idper' => 'required',
+            'idest' => 'required|string|exists:estudiantes,idest',
+            'idper' => 'required|string|exists:periodos,idper',
             'asignaturas' => 'required|array|min:1',
         ]);
 
-        $idmat = $request->idper . '-' . strtoupper(Str::random(4)); // simula trigger
-
+        // Se asume que el trigger genera el ID, así que no lo colocamos
         $matricula = Matricula::create([
-            'idmat' => $idmat,
             'idest' => $request->idest,
             'idper' => $request->idper,
             'fechamat' => now(),
@@ -40,13 +44,12 @@ class MatriculaController extends Controller
 
         foreach ($request->asignaturas as $asig) {
             DetalleMatricula::create([
-                'iddet' => strtoupper(Str::uuid()),
-                'idmat' => $idmat,
+                'idmat' => $matricula->idmat,
                 'idasi' => $asig,
                 'detalledet' => 'Asignado desde administrador',
             ]);
         }
 
-        return redirect()->route('matriculas.create')->with('success', 'Matrícula registrada correctamente.');
+        return redirect()->route('admin.matriculas.index')->with('success', 'Matrícula registrada correctamente.');
     }
 }

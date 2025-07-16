@@ -40,8 +40,13 @@ Route::middleware(['auth', 'rol:admin'])->prefix('admin')->name('admin.')->group
     Route::delete('/areas/{id}', [AreaController::class, 'destroy'])->name('areas.destroy');
 
     // --- Matrículas ---
-    Route::get('/matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
-    Route::post('/matriculas', [MatriculaController::class, 'store'])->name('matriculas.store');
+    // --- Matrículas ---
+
+    //Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
+    //Route::get('/matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
+    //Route::post('/matriculas', [MatriculaController::class, 'store'])->name('admin.matriculas.store');
+    //Route::post('/matriculas', [MatriculaController::class, 'store'])->name('admin.matriculas.store');
+    Route::resource('matriculas', MatriculaController::class)->except(['show'])->names('matriculas');
 
     // --- Titulaciones ---
     Route::resource('titulaciones', TitulacionController::class)->except(['show'])->names('titulaciones');

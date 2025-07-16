@@ -9,17 +9,18 @@ class DetalleMatricula extends Model
     protected $table = 'detallematriculas';
     protected $primaryKey = 'iddet';
     public $incrementing = false;
+    protected $keyType = 'string';
     public $timestamps = false;
 
-    protected $fillable = ['iddet', 'idmat', 'idasi', 'detalledet'];
-
-    public function matricula()
-    {
-        return $this->belongsTo(Matricula::class, 'idmat', 'idmat');
-    }
+    protected $fillable = ['idmat', 'idasi', 'detalledet'];
 
     public function asignatura()
     {
         return $this->belongsTo(Asignatura::class, 'idasi', 'idasi');
+    }
+
+    public function matricula()
+    {
+        return $this->belongsTo(Matricula::class, 'idmat', 'idmat');
     }
 }

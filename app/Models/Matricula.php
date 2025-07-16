@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Matricula extends Model
 {
-    protected $table = 'matriculas';
+    protected $table = 'matriculas'; // ✅
     protected $primaryKey = 'idmat';
     public $incrementing = false;
+    protected $keyType = 'string';
     public $timestamps = false;
 
-    // ⚠️ No incluir 'idmat' porque lo genera el trigger
     protected $fillable = ['idper', 'idest', 'fechamat'];
 
     public function estudiante()
