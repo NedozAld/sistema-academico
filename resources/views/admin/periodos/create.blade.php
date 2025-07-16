@@ -10,13 +10,6 @@
             <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <form method="POST" action="{{ route('admin.periodos.store') }}">
                     @csrf
-
-                    <div class="mb-4">
-                        <label for="idper" class="block text-gray-700 text-sm font-bold mb-2">ID Periodo</label>
-                        <input type="text" name="idper" id="idper" maxlength="10" required
-                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    </div>
-
                     <div class="mb-4">
                         <label for="detalleper" class="block text-gray-700 text-sm font-bold mb-2">Detalle</label>
                         <input type="text" name="detalleper" id="detalleper" maxlength="30" required

@@ -25,7 +25,6 @@ class AsignaturaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'idasi' => 'required|string|max:10|unique:asignaturas,idasi',
             'idtit' => 'required|exists:titulaciones,idtit',
             'idniv' => 'required|exists:niveles,idniv',
             'nombreasi' => 'required|string|max:50',
@@ -33,7 +32,13 @@ class AsignaturaController extends Controller
             'practicosasi' => 'required|integer|min:0',
         ]);
 
-        Asignatura::create($request->all());
+        Asignatura::create([
+            'idtit' => $request->idtit,
+            'idniv' => $request->idniv,
+            'nombreasi' => $request->nombreasi,
+            'teoricosasi' => $request->teoricosasi,
+            'practicosasi' => $request->practicosasi,
+        ]);
 
         return redirect()->route('admin.asignaturas.index')->with('success', 'Asignatura registrada correctamente.');
     }

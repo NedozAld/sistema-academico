@@ -10,11 +10,15 @@ class Periodo extends Model
     protected $primaryKey = 'idper';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['idper', 'detalleper', 'inicioper', 'finper'];
+
+    // ✅ NO incluyas idper en fillable porque lo genera el trigger
+    protected $fillable = ['detalleper', 'inicioper', 'finper'];
+
+    // ✅ Desactiva los timestamps si no existen en tu tabla
+    public $timestamps = false;
 
     public function matriculas()
     {
         return $this->hasMany(Matricula::class, 'idper', 'idper');
     }
 }
-

@@ -11,7 +11,8 @@ class Matricula extends Model
     public $incrementing = false;
     public $timestamps = false;
 
-    protected $fillable = ['idmat', 'idper', 'idest', 'fechamat'];
+    // ⚠️ No incluir 'idmat' porque lo genera el trigger
+    protected $fillable = ['idper', 'idest', 'fechamat'];
 
     public function estudiante()
     {

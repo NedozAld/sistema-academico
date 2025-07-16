@@ -10,7 +10,9 @@ class Asignatura extends Model
     protected $primaryKey = 'idasi';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['idasi', 'idtit', 'idniv', 'nombreasi', 'teoricosasi', 'practicosasi'];
+    protected $fillable = ['idtit', 'idniv', 'nombreasi', 'teoricosasi', 'practicosasi'];
+
+    public $timestamps = false;
 
     public function titulacion()
     {

@@ -21,7 +21,6 @@ class PeriodoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'idper' => 'required|string|max:10|unique:periodos,idper',
             'detalleper' => 'required|string|max:30',
             'inicioper' => 'required|date',
             'finper' => 'required|date|after_or_equal:inicioper',

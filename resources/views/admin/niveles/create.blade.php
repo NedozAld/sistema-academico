@@ -12,12 +12,6 @@
                     @csrf
 
                     <div class="mb-4">
-                        <label for="idniv" class="block text-gray-700 text-sm font-bold mb-2">ID Nivel</label>
-                        <input type="text" name="idniv" id="idniv" maxlength="10" required
-                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    </div>
-
-                    <div class="mb-4">
                         <label for="nombreniv" class="block text-gray-700 text-sm font-bold mb-2">Nombre del Nivel</label>
                         <input type="text" name="nombreniv" id="nombreniv" maxlength="30" required
                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">

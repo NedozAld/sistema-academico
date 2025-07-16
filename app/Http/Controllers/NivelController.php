@@ -21,11 +21,12 @@ class NivelController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'idniv' => 'required|string|max:10|unique:niveles,idniv',
             'nombreniv' => 'required|string|max:30',
         ]);
 
-        Nivel::create($request->all());
+        Nivel::create([
+            'nombreniv' => $request->nombreniv
+        ]);
 
         return redirect()->route('admin.niveles.index')->with('success', 'Nivel registrado correctamente.');
     }

@@ -10,7 +10,12 @@ class Nivel extends Model
     protected $primaryKey = 'idniv';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['idniv', 'nombreniv'];
+
+    // ⚠️ Ya NO incluyas 'idniv' aquí porque el trigger lo genera automáticamente
+    protected $fillable = ['nombreniv'];
+
+    // ❗ Indica que tu tabla NO usa timestamps
+    public $timestamps = false;
 
     public function asignaturas()
     {
