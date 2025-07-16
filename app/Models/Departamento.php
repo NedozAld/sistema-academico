@@ -11,6 +11,8 @@ class Departamento extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    public $timestamps = false;
+    
     protected $fillable = ['iddep', 'nombredep'];
 
     public function areas()

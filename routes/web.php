@@ -6,6 +6,11 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\MatriculaController;
+use App\Http\Controllers\TitulacionController;
+use App\Http\Controllers\NivelController;
+use App\Http\Controllers\PeriodoController;
+use App\Http\Controllers\AsignaturaController;
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -28,12 +33,27 @@ Route::middleware(['auth', 'rol:admin'])->prefix('admin')->name('admin.')->group
 
     // --- Áreas ---
     Route::get('/areas', [AreaController::class, 'index'])->name('areas.index');
-
-    Route::get('/areas/create', [AreaController::class, 'create'])->name('areas.create'); // ✅ AÑADIDA
-    Route::get('/areas/{id}/edit', [AreaController::class, 'edit'])->name('areas.edit');   // ✅ AÑADIDA
+    Route::get('/areas/create', [AreaController::class, 'create'])->name('areas.create');
+    Route::get('/areas/{id}/edit', [AreaController::class, 'edit'])->name('areas.edit');
     Route::post('/areas', [AreaController::class, 'store'])->name('areas.store');
     Route::put('/areas/{id}', [AreaController::class, 'update'])->name('areas.update');
     Route::delete('/areas/{id}', [AreaController::class, 'destroy'])->name('areas.destroy');
+
+    // --- Matrículas ---
+    Route::get('/matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
+    Route::post('/matriculas', [MatriculaController::class, 'store'])->name('matriculas.store');
+
+    // --- Titulaciones ---
+    Route::resource('titulaciones', TitulacionController::class)->except(['show'])->names('titulaciones');
+
+    // --- Niveles ---
+    Route::resource('niveles', NivelController::class)->except(['show'])->names('niveles');
+
+    // --- Periodos ---
+    Route::resource('periodos', PeriodoController::class)->except(['show'])->names('periodos');
+
+    // --- Asignaturas ---
+    Route::resource('asignaturas', AsignaturaController::class)->except(['show'])->names('asignaturas');
 });
 
 // Rutas para estudiantes
@@ -47,7 +67,7 @@ Route::middleware(['auth', 'rol:estudiante'])->prefix('estudiante')->name('estud
     // Route::get('/tutorias', [...])->name('tutorias');
 });
 
-// Dashboard Laravel Breeze (opcional)
+// Dashboard Laravel Breeze
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
