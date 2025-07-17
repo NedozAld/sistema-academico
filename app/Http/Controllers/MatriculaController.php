@@ -9,6 +9,9 @@ use App\Models\Matricula;
 use App\Models\DetalleMatricula;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\Titulacion;
+use App\Models\Nivel;
+use Illuminate\Support\Facades\DB;
 
 class MatriculaController extends Controller
 {
@@ -18,38 +21,85 @@ class MatriculaController extends Controller
         return view('matriculas.index', compact('matriculas'));
     }
 
-    public function create()
+
+
+    public function create(Request $request)
     {
-        return view('matriculas.create', [
-            'estudiantes' => Estudiante::all(),
-            'periodos' => Periodo::all(),
-            'asignaturas' => Asignatura::all(),
-        ]);
+        $estudiantes = Estudiante::all();
+        $periodos = Periodo::all();
+        $titulaciones = Titulacion::all();
+        $niveles = Nivel::all();
+
+        $asignaturas = [];
+
+        if ($request->filled('idtit') && $request->filled('idniv')) {
+            $asignaturas = Asignatura::where('idtit', $request->idtit)
+                ->where('idniv', $request->idniv)
+                ->get();
+        }
+
+        return view('matriculas.create', compact('estudiantes', 'periodos', 'titulaciones', 'niveles', 'asignaturas'));
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'idest' => 'required|string|exists:estudiantes,idest',
-            'idper' => 'required|string|exists:periodos,idper',
-            'asignaturas' => 'required|array|min:1',
-        ]);
+{
+    $request->validate([
+        'idest' => 'required|string|exists:estudiantes,idest',
+        'idper' => 'required|string|exists:periodos,idper',
+        'idtit' => 'required|string|exists:titulaciones,idtit',
+        'idniv' => 'required|string|exists:niveles,idniv',
+        'asignaturas' => 'required|array|min:1',
+    ]);
 
-        // Se asume que el trigger genera el ID, así que no lo colocamos
-        $matricula = Matricula::create([
-            'idest' => $request->idest,
-            'idper' => $request->idper,
-            'fechamat' => now(),
-        ]);
+    // Verificar si el estudiante ya tiene matrícula anterior
+    $ultimaMatricula = Matricula::where('idest', $request->idest)
+        ->orderByDesc('fechamat')
+        ->first();
 
-        foreach ($request->asignaturas as $asig) {
-            DetalleMatricula::create([
-                'idmat' => $matricula->idmat,
-                'idasi' => $asig,
-                'detalledet' => 'Asignado desde administrador',
-            ]);
+    if ($ultimaMatricula) {
+        // Validar que se matricule en la misma carrera
+        if ($ultimaMatricula->idtit !== $request->idtit) {
+            return back()->withErrors([
+                'idtit' => 'Ya estás matriculado en otra carrera. No puedes cambiar de carrera.',
+            ])->withInput();
         }
 
-        return redirect()->route('admin.matriculas.index')->with('success', 'Matrícula registrada correctamente.');
+        // Validar que el nivel actual sea el siguiente al último
+        $niveles = Nivel::pluck('idniv')->toArray();
+        $indexUltimo = array_search($ultimaMatricula->idniv, $niveles);
+        $indexNuevo = array_search($request->idniv, $niveles);
+
+        if ($indexNuevo === false || $indexUltimo === false || $indexNuevo !== $indexUltimo + 1) {
+            return back()->withErrors([
+                'idniv' => 'Debes matricularte en el siguiente nivel de tu carrera (' . $niveles[$indexUltimo + 1] . ').',
+            ])->withInput();
+        }
     }
+
+    // Insertar la matrícula
+    DB::insert('INSERT INTO matriculas (idest, idper, idtit, idniv, fechamat) VALUES (?, ?, ?, ?, ?) RETURNING idmat', [
+        $request->idest,
+        $request->idper,
+        $request->idtit,
+        $request->idniv,
+        now(),
+    ]);
+
+    // Obtener el idmat recién creado
+    $idmat = DB::select('SELECT idmat FROM matriculas WHERE idest = ? AND idper = ?', [
+        $request->idest,
+        $request->idper
+    ])[0]->idmat;
+
+    foreach ($request->asignaturas as $asig) {
+        DetalleMatricula::create([
+            'idmat' => $idmat,
+            'idasi' => $asig,
+            'detalledet' => 'Asignado automáticamente por carrera y nivel',
+        ]);
+    }
+
+    return redirect()->route('admin.matriculas.index')->with('success', 'Matrícula registrada correctamente.');
+}
+
 }

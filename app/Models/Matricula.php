@@ -12,7 +12,7 @@ class Matricula extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
-    protected $fillable = ['idper', 'idest', 'fechamat'];
+    protected $fillable = ['idper', 'idest', 'fechamat', 'idtit', 'idniv'];
 
     public function estudiante()
     {
@@ -27,5 +27,14 @@ class Matricula extends Model
     public function detalles()
     {
         return $this->hasMany(DetalleMatricula::class, 'idmat', 'idmat');
+    }
+    public function titulacion()
+    {
+        return $this->belongsTo(Titulacion::class, 'idtit', 'idtit');
+    }
+
+    public function nivel()
+    {
+        return $this->belongsTo(Nivel::class, 'idniv', 'idniv');
     }
 }
