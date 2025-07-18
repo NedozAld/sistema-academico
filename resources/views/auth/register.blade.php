@@ -8,7 +8,6 @@
             <select id="tipo_usuario" name="tipo_usuario" required class="block mt-1 w-full">
                 <option value="">-- Selecciona una opción --</option>
                 <option value="estudiante" {{ old('tipo_usuario') == 'estudiante' ? 'selected' : '' }}>Estudiante</option>
-                <option value="profesor" {{ old('tipo_usuario') == 'profesor' ? 'selected' : '' }}>Profesor</option>
             </select>
             <x-input-error :messages="$errors->get('tipo_usuario')" class="mt-2" />
         </div>
