@@ -14,7 +14,7 @@ class RouteServiceProvider extends ServiceProvider
     /**
      * Ruta por defecto después de login (ya no la usaremos directamente).
      */
-    public const HOME = '/dashboard';
+    public const HOME = '/estudiante/inicio';
 
     /**
      * Configuración de rutas.
