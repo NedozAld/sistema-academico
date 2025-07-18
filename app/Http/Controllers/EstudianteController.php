@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 
 class EstudianteController extends Controller
 {
+    public function inicio()
+    {
+        return view('estudiante.inicio');
+    }
     public function index()
     {
         return view('estudiante.inicio');
