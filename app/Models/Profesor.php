@@ -9,6 +9,7 @@ class Profesor extends Model
     protected $table = 'profesores';
     protected $primaryKey = 'idpro';
     public $incrementing = false;
+    protected $keyType = 'string';
     public $timestamps = false;
 
     protected $fillable = [
@@ -17,10 +18,22 @@ class Profesor extends Model
         'nombrespro',
         'apellidospro',
         'telefonopro',
-        'correopro',
+        //'correopro'
     ];
 
-    // Relación con la tabla users (opcional, si deseas acceder al usuario desde el profesor)
+    // Relación con el área
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'idare', 'idare');
+    }
+
+    // Relación con asignaturas (muchas a muchas)
+    public function asignaturas()
+    {
+        return $this->belongsToMany(Asignatura::class, 'pro_asi', 'idpro', 'idasi');
+    }
+
+    // Relación con el usuario del sistema (opcional)
     public function user()
     {
         return $this->hasOne(User::class, 'id_relacionado', 'idpro')->where('tipo_usuario', 'profesor');

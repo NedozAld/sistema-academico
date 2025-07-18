@@ -11,6 +11,8 @@ use App\Http\Controllers\TitulacionController;
 use App\Http\Controllers\NivelController;
 use App\Http\Controllers\PeriodoController;
 use App\Http\Controllers\AsignaturaController;
+use App\Http\Controllers\ProfesorController;
+
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -59,6 +61,10 @@ Route::middleware(['auth', 'rol:admin'])->prefix('admin')->name('admin.')->group
 
     // --- Asignaturas ---
     Route::resource('asignaturas', AsignaturaController::class)->except(['show'])->names('asignaturas');
+
+    // --- Profesores ---
+    Route::resource('profesores', ProfesorController::class)->except(['show'])->names('profesores');
+    Route::get('/profesores/create', [ProfesorController::class, 'create'])->name('profesores.create');
 });
 
 // Rutas para estudiantes
@@ -68,6 +74,13 @@ Route::middleware(['auth', 'rol:estudiante'])->prefix('estudiante')->name('estud
 
     // Futuras rutas: matrícula, horario, tutorías, etc.
     // Route::get('/matricula', [...])->name('matricula');
+    // Route::get('/horario', [...])->name('horario');
+    // Route::get('/tutorias', [...])->name('tutorias');
+});
+
+Route::middleware(['auth', 'rol:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
+    Route::get('/inicio', [ProfesorController::class, 'inicio'])->name('inicio');
+    // Futuras rutas: horario, tutorías, etc.
     // Route::get('/horario', [...])->name('horario');
     // Route::get('/tutorias', [...])->name('tutorias');
 });
