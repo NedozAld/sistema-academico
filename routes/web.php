@@ -12,7 +12,7 @@ use App\Http\Controllers\NivelController;
 use App\Http\Controllers\PeriodoController;
 use App\Http\Controllers\AsignaturaController;
 use App\Http\Controllers\ProfesorController;
-
+use App\Models\Asignatura;
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -67,16 +67,25 @@ Route::middleware(['auth', 'rol:admin'])->prefix('admin')->name('admin.')->group
     Route::get('/profesores/create', [ProfesorController::class, 'create'])->name('profesores.create');
 });
 
+Route::get('/asignaturas/{idtit}/{idniv}', function ($idtit, $idniv) {
+    return Asignatura::where('idtit', $idtit)
+        ->where('idniv', $idniv)
+        ->get(['idasi', 'nombreasi']);
+});
 // Rutas para estudiantes
+// ======================= ESTUDIANTE ===========================
 Route::middleware(['auth', 'rol:estudiante'])->prefix('estudiante')->name('estudiante.')->group(function () {
     Route::get('/inicio', [EstudianteController::class, 'index'])->name('inicio');
     Route::get('/perfil', [EstudianteController::class, 'perfil'])->name('perfil');
-
-    // Futuras rutas: matrícula, horario, tutorías, etc.
-    // Route::get('/matricula', [...])->name('matricula');
-    // Route::get('/horario', [...])->name('horario');
-    // Route::get('/tutorias', [...])->name('tutorias');
+    Route::get('/matricula', [EstudianteController::class, 'matriculaForm'])->name('matricula.form');
+    Route::post('/matricula', [EstudianteController::class, 'registrarMatricula'])->name('matricula.registrar');
+    Route::get('/materias', [EstudianteController::class, 'misMaterias'])->name('materias');
+    Route::get('/horario', [EstudianteController::class, 'miHorario'])->name('horario');
+    Route::get('/tutorias', [EstudianteController::class, 'tutorias'])->name('tutorias');
 });
+
+
+
 
 Route::middleware(['auth', 'rol:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
     Route::get('/inicio', [ProfesorController::class, 'inicio'])->name('inicio');
@@ -84,6 +93,10 @@ Route::middleware(['auth', 'rol:profesor'])->prefix('profesor')->name('profesor.
     // Route::get('/horario', [...])->name('horario');
     // Route::get('/tutorias', [...])->name('tutorias');
 });
+
+// ======================= API AUXILIAR PARA MATRÍCULA ===========================
+Route::get('/asignaturas/{idtit}/{idniv}', [AsignaturaController::class, 'porCarreraYNivel']);
+
 
 // Dashboard Laravel Breeze
 Route::get('/dashboard', function () {
