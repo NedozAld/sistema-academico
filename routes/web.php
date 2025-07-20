@@ -19,6 +19,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 // Panel del administrador
 Route::middleware(['auth', 'rol:admin'])->prefix('admin')->name('admin.')->group(function () {
 
@@ -79,7 +80,8 @@ Route::middleware(['auth', 'rol:estudiante'])->prefix('estudiante')->name('estud
     Route::get('/perfil', [EstudianteController::class, 'perfil'])->name('perfil');
     Route::get('/matricula', [EstudianteController::class, 'matriculaForm'])->name('matricula.form');
     Route::post('/matricula', [EstudianteController::class, 'registrarMatricula'])->name('matricula.registrar');
-    Route::get('/materias', [EstudianteController::class, 'misMaterias'])->name('materias');
+
+    Route::get('/materias', [EstudianteController::class, 'verMaterias'])->name('materias');
     Route::get('/horario', [EstudianteController::class, 'miHorario'])->name('horario');
     Route::get('/tutorias', [EstudianteController::class, 'tutorias'])->name('tutorias');
 });

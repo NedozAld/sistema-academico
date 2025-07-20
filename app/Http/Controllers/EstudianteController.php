@@ -153,4 +153,35 @@ class EstudianteController extends Controller
         return redirect()->route('estudiante.inicio')
             ->with('success', 'Matrícula realizada correctamente.');
     }
+
+    public function verMaterias()
+    {
+        $user = Auth::user();
+        $estudiante = Estudiante::findOrFail($user->id_relacionado);
+
+        // Incluye explícitamente las relaciones para evitar null
+        $matricula = Matricula::with([
+                'periodo:idper,detalleper',
+                'titulacion:idtit,detalletit',
+                'nivel:idniv,nombreniv',
+                'detalles.asignatura'
+            ])
+            ->where('idest', $estudiante->idest)
+            ->orderByDesc('fechamat')
+            ->first();
+
+        if (!$matricula) {
+            return view('estudiante.materias', [
+                'matricula' => null,
+                'asignaturas' => []
+            ]);
+        }
+
+        $asignaturas = $matricula->detalles->map(fn($detalle) => $detalle->asignatura);
+
+        return view('estudiante.materias', [
+            'matricula' => $matricula,
+            'asignaturas' => $asignaturas
+        ]);
+    }
 }
