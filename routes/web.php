@@ -91,6 +91,8 @@ Route::middleware(['auth', 'rol:estudiante'])->prefix('estudiante')->name('estud
 
 Route::middleware(['auth', 'rol:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
     Route::get('/inicio', [ProfesorController::class, 'inicio'])->name('inicio');
+    Route::get('/perfil', [ProfesorController::class, 'perfil'])->name('perfil');
+
     // Futuras rutas: horario, tutorías, etc.
     // Route::get('/horario', [...])->name('horario');
     // Route::get('/tutorias', [...])->name('tutorias');

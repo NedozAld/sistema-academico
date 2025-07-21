@@ -7,6 +7,7 @@ use App\Models\Area;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class ProfesorController extends Controller
 {
@@ -108,5 +109,18 @@ class ProfesorController extends Controller
         $profesor->delete();
 
         return redirect()->route('admin.profesores.index')->with('success', 'Profesor eliminado correctamente.');
+    }
+
+    public function perfil()
+    {
+        $user = Auth::user();
+
+        if ($user->tipo_usuario !== 'profesor') {
+            abort(403, 'Acceso no autorizado');
+        }
+
+        $profesor = Profesor::with('area')->findOrFail($user->id_relacionado);
+
+        return view('profesores.perfil', compact('profesor'));
     }
 }
