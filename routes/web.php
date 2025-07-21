@@ -13,6 +13,7 @@ use App\Http\Controllers\PeriodoController;
 use App\Http\Controllers\AsignaturaController;
 use App\Http\Controllers\ProfesorController;
 use App\Models\Asignatura;
+use App\Http\Controllers\AsignacionController;
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -66,6 +67,12 @@ Route::middleware(['auth', 'rol:admin'])->prefix('admin')->name('admin.')->group
     // --- Profesores ---
     Route::resource('profesores', ProfesorController::class)->except(['show'])->names('profesores');
     Route::get('/profesores/create', [ProfesorController::class, 'create'])->name('profesores.create');
+
+    Route::get('asignaciones', [AsignacionController::class, 'index'])->name('asignaciones.index');
+    Route::get('asignaciones/create', [AsignacionController::class, 'create'])->name('asignaciones.create');
+    Route::post('asignaciones', [AsignacionController::class, 'store'])->name('asignaciones.store');
+    Route::delete('asignaciones/{idpro}/{idasi}', [AsignacionController::class, 'destroy'])->name('asignaciones.destroy');
+
 });
 
 Route::get('/asignaturas/{idtit}/{idniv}', function ($idtit, $idniv) {
