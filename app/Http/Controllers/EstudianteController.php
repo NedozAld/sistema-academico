@@ -47,7 +47,7 @@ class EstudianteController extends Controller
         $periodos = Periodo::orderByDesc('inicioper')->get();
         $titulaciones = Titulacion::all();
         $niveles = Nivel::orderBy('idniv')->get();
-        
+
         Log::info('Titulaciones encontradas: ' . $titulaciones->count());
         if (!$titulaciones->isEmpty()) {
             Log::info('Primera titulación: ' . $titulaciones->first()->nombretit);
@@ -199,5 +199,24 @@ class EstudianteController extends Controller
             'matricula' => $matricula,
             'asignaturas' => $asignaturas
         ]);
+    }
+
+    public function historial()
+    {
+        $user = Auth::user();
+        $estudiante = Estudiante::findOrFail($user->id_relacionado);
+
+        // Traer todas las matrículas del estudiante con relaciones necesarias
+        $matriculas = Matricula::with([
+            'periodo:idper,detalleper',
+            'nivel:idniv,nombreniv',
+            'titulacion:idtit,detalletit',  // Cambiado de 'nombretit' a 'detalletit'
+            'detalles.asignatura:idasi,nombreasi'
+        ])
+            ->where('idest', $estudiante->idest)
+            ->orderByDesc('fechamat')
+            ->get();
+
+        return view('estudiante.historial', compact('estudiante', 'matriculas'));
     }
 }

@@ -95,8 +95,6 @@ Route::middleware(['auth', 'rol:admin'])->prefix('admin')->name('admin.')->group
     Route::get('tutorias/create', [TutoriaController::class, 'create'])->name('tutorias.create');
     Route::get('tutorias/index', [TutoriaController::class, 'index'])->name('tutorias.index');
     Route::post('tutorias', [TutoriaController::class, 'store'])->name('tutorias.store');
-
-
 });
 
 Route::get('/asignaturas/{idtit}/{idniv}', function ($idtit, $idniv) {
@@ -119,6 +117,9 @@ Route::middleware(['auth', 'rol:estudiante'])->prefix('estudiante')->name('estud
     Route::post('tutorias/{id}/confirmar', [TutoriaController::class, 'estudianteConfirmar'])->name('tutorias.confirmar');
 });
 
+Route::get('/estudiante/historial', [EstudianteController::class, 'historial'])
+    ->name('estudiante.historial')
+    ->middleware('auth');
 
 
 
