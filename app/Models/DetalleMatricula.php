@@ -23,4 +23,8 @@ class DetalleMatricula extends Model
     {
         return $this->belongsTo(Matricula::class, 'idmat', 'idmat');
     }
+    public function tutorias()
+    {
+        return $this->hasMany(Tutoria::class, 'iddet', 'iddet');
+    }
 }

@@ -14,6 +14,9 @@ use App\Http\Controllers\AsignaturaController;
 use App\Http\Controllers\ProfesorController;
 use App\Models\Asignatura;
 use App\Http\Controllers\AsignacionController;
+use App\Http\Controllers\TutoriaController;
+use App\Http\Controllers\DiaController;
+use App\Http\Controllers\HorarioController;
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -72,6 +75,27 @@ Route::middleware(['auth', 'rol:admin'])->prefix('admin')->name('admin.')->group
     Route::get('asignaciones/create', [AsignacionController::class, 'create'])->name('asignaciones.create');
     Route::post('asignaciones', [AsignacionController::class, 'store'])->name('asignaciones.store');
     Route::delete('asignaciones/{idpro}/{idasi}', [AsignacionController::class, 'destroy'])->name('asignaciones.destroy');
+
+    // --- Días ---
+    // CRUD de días
+    Route::get('/dias', [DiaController::class, 'index'])->name('dias.index');
+    Route::get('/dias/create', [DiaController::class, 'create'])->name('dias.create');
+    Route::get('/dias/index', [DiaController::class, 'index'])->name('dias.index');
+    Route::post('/dias', [DiaController::class, 'store'])->name('dias.store');
+
+    // --- Horarios ---
+    Route::get('/horarios/create', [HorarioController::class, 'create'])->name('horarios.create');
+    Route::get('/horarios/index', [HorarioController::class, 'index'])->name('horarios.index');
+
+    Route::post('/horarios', [HorarioController::class, 'store'])->name('horarios.store');
+
+
+    // --- Tutorías ---
+    Route::resource('tutorias', TutoriaController::class)->except(['show']);
+    Route::get('tutorias/create', [TutoriaController::class, 'create'])->name('tutorias.create');
+    Route::get('tutorias/index', [TutoriaController::class, 'index'])->name('tutorias.index');
+    Route::post('tutorias', [TutoriaController::class, 'store'])->name('tutorias.store');
+
 
 });
 

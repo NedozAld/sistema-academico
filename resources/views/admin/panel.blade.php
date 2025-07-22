@@ -369,6 +369,25 @@
                                 </a>
                             </div>
                         </div>
+
+
+                        <div>
+                            <h7>Dias</h7>
+                            <a href="{{route('admin.dias.create')}}"> crear Dias</a>
+                            <a href="{{route('admin.dias.index')}}"> ver Dias</a>
+                        </div>
+
+                        <div>
+                            <h7>Horarios</h7>
+                            <a href="{{route('admin.horarios.create')}}"> crear Dias</a>
+                            <a href="{{route('admin.horarios.index')}}"> ver Dias</a>
+                        </div>
+
+                        <div>
+                            <h7>Tutorias</h7>
+                            <a href="{{route('admin.tutorias.create')}}"> crear Tutorias</a>
+                            <a href="{{route('admin.tutorias.index')}}"> ver Tutorias</a>
+                        </div>
                     </div>
                 </div>
             </div>
