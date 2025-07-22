@@ -67,7 +67,7 @@
             <p class="text-xl sm:text-2xl text-gray-700 mb-10">
                 Tu portal integral para gestionar cursos, calificaciones, horarios y recursos educativos.
             </p>
-            <a href="{{ url('/dashboard') }}" class="btn">
+            <a href="" class="btn">
                 Acceder al Portal
                 <svg xmlns="http://www.w3.org/2000/svg" class="ml-3 -mr-1 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -82,7 +82,7 @@
                     ¡Inicia tu futuro hoy!
                 </h2>
                 <p class="text-lg sm:text-xl mb-8 opacity-90">
-                    ¿Listo para matricularte en alguna carrera? Regístrate ahora para acceder al portal de matrículas y dar el primer paso hacia tu futuro académico.
+                    ¿Listo para matricularte en unas de Nuestras carreras? Regístrate ahora para acceder al portal de matrículas y dar el primer paso hacia tu futuro académico.
                 </p>
                 <!-- Botón para registrarse -->
                 <a href="{{ route('register') }}" class="btn-secondary">
