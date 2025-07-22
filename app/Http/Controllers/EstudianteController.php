@@ -114,7 +114,6 @@ class EstudianteController extends Controller
             'idper' => 'required|exists:periodos,idper',
             'idtit' => 'required|exists:titulaciones,idtit',
             'idniv' => 'required|exists:niveles,idniv',
-            'asignaturas' => 'nullable|array|min:1',
         ]);
 
         $user = Auth::user();
@@ -132,7 +131,7 @@ class EstudianteController extends Controller
         }
 
         // Registrar matrícula
-        $matricula = Matricula::create([
+        Matricula::create([
             'idest' => $estudiante->idest,
             'idper' => $request->idper,
             'idtit' => $request->idtit,
@@ -140,19 +139,30 @@ class EstudianteController extends Controller
             'fechamat' => now(),
         ]);
 
-        if (is_array($request->asignaturas)) {
-            foreach ($request->asignaturas as $idasi) {
-                DetalleMatricula::create([
-                    'idmat' => $matricula->idmat,
-                    'idasi' => $idasi,
-                    'detalledet' => 'Asignada automáticamente por el sistema',
-                ]);
-            }
+        // Recuperar la matrícula recién creada con el valor de idmat generado por el trigger
+        $matricula = Matricula::where('idest', $estudiante->idest)
+            ->where('idper', $request->idper)
+            ->latest('fechamat')
+            ->first();
+
+
+        // Buscar asignaturas correspondientes a esa titulación y nivel
+        $asignaturas = Asignatura::where('idtit', $request->idtit)
+            ->where('idniv', $request->idniv)
+            ->get();
+
+        foreach ($asignaturas as $asignatura) {
+            DetalleMatricula::create([
+                'idmat' => $matricula->idmat,
+                'idasi' => $asignatura->idasi,
+                'detalledet' => 'Asignada automáticamente por el sistema',
+            ]);
         }
 
         return redirect()->route('estudiante.inicio')
             ->with('success', 'Matrícula realizada correctamente.');
     }
+
 
     public function verMaterias()
     {
@@ -161,11 +171,11 @@ class EstudianteController extends Controller
 
         // Incluye explícitamente las relaciones para evitar null
         $matricula = Matricula::with([
-                'periodo:idper,detalleper',
-                'titulacion:idtit,detalletit',
-                'nivel:idniv,nombreniv',
-                'detalles.asignatura'
-            ])
+            'periodo:idper,detalleper',
+            'titulacion:idtit,detalletit',
+            'nivel:idniv,nombreniv',
+            'detalles.asignatura'
+        ])
             ->where('idest', $estudiante->idest)
             ->orderByDesc('fechamat')
             ->first();
