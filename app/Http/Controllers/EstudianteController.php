@@ -11,6 +11,7 @@ use App\Models\Nivel;
 use App\Models\Asignatura;
 use App\Models\Matricula;
 use App\Models\DetalleMatricula;
+use Illuminate\Support\Facades\Log;
 
 class EstudianteController extends Controller
 {
@@ -46,6 +47,11 @@ class EstudianteController extends Controller
         $periodos = Periodo::orderByDesc('inicioper')->get();
         $titulaciones = Titulacion::all();
         $niveles = Nivel::orderBy('idniv')->get();
+        
+        Log::info('Titulaciones encontradas: ' . $titulaciones->count());
+        if (!$titulaciones->isEmpty()) {
+            Log::info('Primera titulación: ' . $titulaciones->first()->nombretit);
+        }
 
         if ($periodos->isEmpty()) {
             return back()->with('error', 'No hay períodos académicos disponibles.');

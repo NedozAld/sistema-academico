@@ -10,14 +10,19 @@
 
             {{-- Primera Matrícula --}}
             @if ($modo === 'primera')
+                
+
                 <h3 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">
                     <span class="text-blue-600">Primera Matrícula</span> - Elige tu Carrera
                 </h3>
 
-                @if ($titulaciones->isEmpty())
+                @if (!isset($titulaciones) || $titulaciones->isEmpty())
                     <div class="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg">
                         <p class="font-bold">¡Atención!</p>
                         <p>No hay titulaciones registradas para la matrícula. Contacta al administrador.</p>
+                        @if(!isset($titulaciones))
+                            <p class="text-sm mt-2">Error: La variable $titulaciones no está definida.</p>
+                        @endif
                     </div>
                 @else
                     <form method="POST" action="{{ route('estudiante.matricula.registrar') }}" class="space-y-6">
@@ -27,35 +32,38 @@
                         <input type="hidden" name="idper" value="{{ $periodoDisponible->idper }}">
 
                         {{-- Selección de Titulación --}}
-                        <label for="idtit" class="block font-semibold text-gray-700 mb-2">Selecciona
-                            Titulación:</label>
-                        <select id="idtit" name="idtit" required
-                            class="w-full border border-gray-300 rounded-lg p-2">
-                            <option value="">-- Selecciona una opción --</option>
-                            @foreach ($titulaciones as $tit)
-                                <option value="{{ $tit->idtit }}">{{ $tit->nombretit }}</option>
-                            @endforeach
-                        </select>
+                        <div>
+                            <label for="idtit" class="block font-semibold text-gray-700 mb-2">Selecciona Titulación:</label>
+                            <select id="idtit" name="idtit" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Selecciona una opción --</option>
+                                @foreach ($titulaciones as $tit)
+                                    <option value="{{ $tit->idtit }}">
+                                        {{ $tit->nombretit ?? $tit->detalletit ?? 'Titulación ID: ' . $tit->idtit }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('idtit')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         {{-- Asignaturas dinámicas --}}
-                        <div id="asignaturas-container"
-                            class="hidden bg-blue-50 p-6 rounded-lg border border-blue-200 mt-4">
+                        <div id="asignaturas-container" class="hidden bg-blue-50 p-6 rounded-lg border border-blue-200 mt-4">
                             <label class="block font-semibold text-gray-700 mb-2">Asignaturas a Matricular:</label>
                             <div id="lista-asignaturas" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-                            <p class="text-sm text-gray-500 mt-2">Las asignaturas se seleccionan automáticamente al
-                                elegir la carrera.</p>
+                            <p class="text-sm text-gray-500 mt-2">Las asignaturas se seleccionan automáticamente al elegir la carrera.</p>
                         </div>
 
                         {{-- Botón --}}
                         <div>
-                            <button type="submit"
-                                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-bold">
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-bold transition-colors duration-200">
                                 Confirmar Matrícula
                             </button>
                         </div>
                     </form>
                 @endif
 
-                {{-- Avance de Nivel --}}
+            {{-- Avance de Nivel --}}
             @elseif ($modo === 'avance')
                 <h3 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">
                     <span class="text-blue-600">Matrícula de Avance</span> - Siguiente Nivel
@@ -69,9 +77,9 @@
                     <input type="hidden" name="idtit" value="{{ $ultimaMatricula->idtit }}">
 
                     <div class="bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-lg shadow-md">
-                        <p>Te matricularás en <strong>{{ $nivelAsignado->nomniv }}</strong> de
+                        <p>Te matricularás en <strong>{{ $nivelAsignado->nombreniv ?? $nivelAsignado->nomniv }}</strong> de
                             <strong>{{ $ultimaMatricula->titulacion->nombretit }}</strong> en el período
-                            <strong>{{ $periodoActual->nombreper }}</strong>.</p>
+                            <strong>{{ $periodoActual->detalleper ?? $periodoActual->nombreper }}</strong>.</p>
                     </div>
 
                     {{-- Mostrar asignaturas del siguiente nivel --}}
@@ -84,33 +92,30 @@
                                     ->get();
                             @endphp
                             @forelse ($asignaturas as $asig)
-                                <label
-                                    class="flex items-center p-2 bg-white rounded-md shadow-sm border border-gray-200">
+                                <label class="flex items-center p-2 bg-white rounded-md shadow-sm border border-gray-200">
                                     <input type="checkbox" name="asignaturas[]" value="{{ $asig->idasi }}"
                                         class="form-checkbox h-5 w-5 text-blue-600 mr-3" checked>
                                     <span>{{ $asig->nombreasi }}</span>
                                 </label>
                             @empty
-                                <p class="text-gray-600 col-span-full">No se encontraron asignaturas para este nivel y
-                                    carrera.</p>
+                                <p class="text-gray-600 col-span-full">No se encontraron asignaturas para este nivel y carrera.</p>
                             @endforelse
                         </div>
                     </div>
 
-                    <button type="submit"
-                        class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-bold">
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-bold transition-colors duration-200">
                         Confirmar Matrícula
                     </button>
                 </form>
 
-                {{-- Ya está matriculado --}}
+            {{-- Ya está matriculado --}}
             @elseif ($modo === 'bloqueado')
                 <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-6 py-5 rounded-lg">
                     <p class="font-bold">Matrícula en Curso</p>
                     <p>Ya estás matriculado en el período actual. Espera al próximo período para continuar.</p>
                 </div>
 
-                {{-- Carrera completa --}}
+            {{-- Carrera completa --}}
             @elseif ($modo === 'completo')
                 <div class="bg-green-100 border border-green-400 text-green-700 px-6 py-5 rounded-lg">
                     <p class="font-bold">¡Felicidades!</p>
@@ -123,56 +128,70 @@
     {{-- Script para cargar asignaturas dinámicamente --}}
     @if ($modo === 'primera')
         <script>
-            const titSelect = document.getElementById('idtit');
-            const asignaturasContainer = document.getElementById('asignaturas-container');
-            const listaAsignaturas = document.getElementById('lista-asignaturas');
-            const nivel = "{{ $nivelAsignado->idniv }}";
+            document.addEventListener('DOMContentLoaded', function() {
+                const titSelect = document.getElementById('idtit');
+                const asignaturasContainer = document.getElementById('asignaturas-container');
+                const listaAsignaturas = document.getElementById('lista-asignaturas');
+                const nivel = "{{ $nivelAsignado->idniv ?? '1' }}";
 
-            titSelect.addEventListener('change', function() {
-                const idtit = this.value;
-                if (!idtit) {
-                    asignaturasContainer.classList.add('hidden');
-                    listaAsignaturas.innerHTML = '';
+                if (!titSelect) {
+                    console.error('Select de titulaciones no encontrado');
                     return;
                 }
 
-                listaAsignaturas.innerHTML = '<p class="text-gray-500 col-span-full">Cargando asignaturas...</p>';
-                asignaturasContainer.classList.remove('hidden');
-
-                fetch(`/api/asignaturas/${idtit}/${nivel}`)
-                    .then(res => res.json())
-                    .then(data => {
+                titSelect.addEventListener('change', function() {
+                    const idtit = this.value;
+                    console.log('Titulación seleccionada:', idtit);
+                    
+                    if (!idtit) {
+                        asignaturasContainer.classList.add('hidden');
                         listaAsignaturas.innerHTML = '';
-                        if (data.length === 0) {
-                            listaAsignaturas.innerHTML =
-                                '<p class="text-gray-600 col-span-full">No se encontraron asignaturas.</p>';
-                        } else {
-                            data.forEach(asig => {
-                                const label = document.createElement('label');
-                                label.className =
-                                    'flex items-center p-2 bg-white rounded-md shadow-sm border border-gray-200';
+                        return;
+                    }
 
-                                const checkbox = document.createElement('input');
-                                checkbox.type = 'checkbox';
-                                checkbox.name = 'asignaturas[]';
-                                checkbox.value = asig.idasi;
-                                checkbox.checked = true;
-                                checkbox.className = 'form-checkbox h-5 w-5 text-blue-600 mr-3';
+                    listaAsignaturas.innerHTML = '<p class="text-gray-500 col-span-full">Cargando asignaturas...</p>';
+                    asignaturasContainer.classList.remove('hidden');
 
-                                const span = document.createElement('span');
-                                span.textContent = asig.nombreasi;
+                    fetch(`/api/asignaturas/${idtit}/${nivel}`)
+                        .then(res => {
+                            console.log('Response status:', res.status);
+                            if (!res.ok) {
+                                throw new Error('Error en la respuesta del servidor');
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            console.log('Asignaturas recibidas:', data);
+                            listaAsignaturas.innerHTML = '';
+                            
+                            if (data.length === 0) {
+                                listaAsignaturas.innerHTML = '<p class="text-gray-600 col-span-full">No se encontraron asignaturas.</p>';
+                            } else {
+                                data.forEach(asig => {
+                                    const label = document.createElement('label');
+                                    label.className = 'flex items-center p-2 bg-white rounded-md shadow-sm border border-gray-200';
 
-                                label.appendChild(checkbox);
-                                label.appendChild(span);
-                                listaAsignaturas.appendChild(label);
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Error al cargar asignaturas:', err);
-                        listaAsignaturas.innerHTML =
-                            '<p class="text-red-500 col-span-full">Error al cargar asignaturas. Intenta más tarde.</p>';
-                    });
+                                    const checkbox = document.createElement('input');
+                                    checkbox.type = 'checkbox';
+                                    checkbox.name = 'asignaturas[]';
+                                    checkbox.value = asig.idasi;
+                                    checkbox.checked = true;
+                                    checkbox.className = 'form-checkbox h-5 w-5 text-blue-600 mr-3';
+
+                                    const span = document.createElement('span');
+                                    span.textContent = asig.nombreasi;
+
+                                    label.appendChild(checkbox);
+                                    label.appendChild(span);
+                                    listaAsignaturas.appendChild(label);
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error al cargar asignaturas:', err);
+                            listaAsignaturas.innerHTML = '<p class="text-red-500 col-span-full">Error al cargar asignaturas. Verifica la consola del navegador.</p>';
+                        });
+                });
             });
         </script>
     @endif
