@@ -7,9 +7,12 @@ use App\Models\Tutoria;
 use App\Models\DetalleMatricula;
 use App\Models\Horario;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TutoriaController extends Controller
 {
+    // ADMIN: Ver todas las tutorías
     public function index()
     {
         $tutorias = Tutoria::with([
@@ -20,33 +23,22 @@ class TutoriaController extends Controller
         return view('admin.tutorias.index', compact('tutorias'));
     }
 
+    // ADMIN: Crear tutoría
     public function create()
     {
-        // Cargar detalles con las relaciones necesarias
         $detalles = DetalleMatricula::with([
             'asignatura',
             'matricula.estudiante'
         ])
-            ->whereHas('matricula')
             ->whereHas('matricula.estudiante')
             ->get();
-
-        // Debug: verificar datos
-        Log::info('Detalles cargados:', [
-            'total' => $detalles->count(),
-            'primer_detalle' => $detalles->first() ? [
-                'iddet' => $detalles->first()->iddet,
-                'estudiante_nombres' => $detalles->first()->matricula?->estudiante?->nombresest,
-                'estudiante_apellidos' => $detalles->first()->matricula?->estudiante?->apellidosest,
-                'asignatura' => $detalles->first()->asignatura?->nombreasi,
-            ] : null
-        ]);
 
         $horarios = Horario::all();
 
         return view('admin.tutorias.create', compact('detalles', 'horarios'));
     }
 
+    // ADMIN: Guardar tutoría
     public function store(Request $request)
     {
         $request->validate([
@@ -56,12 +48,12 @@ class TutoriaController extends Controller
         ]);
 
         try {
-            // El trigger se encargará de generar el idtut automáticamente
-            // NO incluir idtut en el create para que el trigger funcione
             Tutoria::create([
                 'iddet' => $request->iddet,
                 'idhor' => $request->idhor,
                 'detalletut' => $request->detalletut,
+                'confirmada_profe' => false,
+                'confirmada_est' => false,
             ]);
 
             return redirect()->route('admin.tutorias.index')
@@ -76,5 +68,57 @@ class TutoriaController extends Controller
                 'error' => 'Error al registrar la tutoría: ' . $e->getMessage()
             ]);
         }
+    }
+
+    // PROFESOR: Ver tutorías que le corresponden
+    public function profesorIndex()
+    {
+        $idpro = Auth::user()->id_relacionado;
+
+        $tutorias = Tutoria::whereHas('detalle.asignatura', function ($query) use ($idpro) {
+            $query->whereIn('idasi', function ($sub) use ($idpro) {
+                $sub->select('idasi')
+                    ->from('pro_asi')
+                    ->where('idpro', $idpro);
+            });
+        })
+        ->with(['detalle.asignatura', 'detalle.matricula.estudiante'])
+        ->get();
+
+        return view('profesores.tutorias.index', compact('tutorias'));
+    }
+
+    // PROFESOR: Confirmar tutoría
+    public function profesorConfirmar($id)
+    {
+        $tutoria = Tutoria::findOrFail($id);
+        $tutoria->confirmada_profe = true;
+        $tutoria->save();
+
+        return back()->with('success', 'Tutoría confirmada como profesor.');
+    }
+
+    // ESTUDIANTE: Ver sus tutorías
+    public function estudianteIndex()
+    {
+        $idest = Auth::user()->id_relacionado;
+
+        $tutorias = Tutoria::whereHas('detalle.matricula', function ($query) use ($idest) {
+            $query->where('idest', $idest);
+        })
+        ->with(['detalle.asignatura'])
+        ->get();
+
+        return view('estudiante.tutorias.index', compact('tutorias'));
+    }
+
+    // ESTUDIANTE: Confirmar tutoría
+    public function estudianteConfirmar($id)
+    {
+        $tutoria = Tutoria::findOrFail($id);
+        $tutoria->confirmada_est = true;
+        $tutoria->save();
+
+        return back()->with('success', 'Has confirmado tu asistencia a la tutoría.');
     }
 }

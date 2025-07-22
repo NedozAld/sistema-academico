@@ -115,6 +115,8 @@ Route::middleware(['auth', 'rol:estudiante'])->prefix('estudiante')->name('estud
     Route::get('/materias', [EstudianteController::class, 'verMaterias'])->name('materias');
     Route::get('/horario', [EstudianteController::class, 'miHorario'])->name('horario');
     Route::get('/tutorias', [EstudianteController::class, 'tutorias'])->name('tutorias');
+    Route::get('tutorias', [TutoriaController::class, 'estudianteIndex'])->name('tutorias.index');
+    Route::post('tutorias/{id}/confirmar', [TutoriaController::class, 'estudianteConfirmar'])->name('tutorias.confirmar');
 });
 
 
@@ -123,6 +125,10 @@ Route::middleware(['auth', 'rol:estudiante'])->prefix('estudiante')->name('estud
 Route::middleware(['auth', 'rol:profesor'])->prefix('profesor')->name('profesor.')->group(function () {
     Route::get('/inicio', [ProfesorController::class, 'inicio'])->name('inicio');
     Route::get('/perfil', [ProfesorController::class, 'perfil'])->name('perfil');
+
+    Route::get('tutorias', [TutoriaController::class, 'profesorIndex'])->name('tutorias.index');
+
+    Route::post('tutorias/{id}/confirmar', [TutoriaController::class, 'profesorConfirmar'])->name('tutorias.confirmar');
 
     // Futuras rutas: horario, tutorías, etc.
     // Route::get('/horario', [...])->name('horario');
