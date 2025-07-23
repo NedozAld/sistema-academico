@@ -64,15 +64,23 @@ class ProfesorController extends Controller
         return redirect()->route('admin.profesores.index')->with('success', 'Profesor registrado correctamente.');
     }
 
-    public function edit($idpro)
+    public function edit($idpro = null)
     {
+        if (Auth::user()->tipo_usuario === 'profesor') {
+            $idpro = Auth::user()->id_relacionado;
+        }
+
         $profesor = Profesor::findOrFail($idpro);
         $areas = Area::all();
-        return view('profesores.edit', compact('profesor', 'areas'));
+        return view('profesores.edit-perfil', compact('profesor', 'areas'));
     }
 
-    public function update(Request $request, $idpro)
+    public function update(Request $request, $idpro = null)
     {
+        if (Auth::user()->tipo_usuario === 'profesor') {
+            $idpro = Auth::user()->id_relacionado;
+        }
+
         $profesor = Profesor::findOrFail($idpro);
 
         $request->validate([
@@ -89,15 +97,19 @@ class ProfesorController extends Controller
             'idare'
         ]));
 
-        // Actualiza también el nombre del usuario relacionado
         $user = User::where('id_relacionado', $profesor->idpro)->first();
         if ($user) {
             $user->name = $profesor->nombrespro . ' ' . $profesor->apellidospro;
             $user->save();
         }
 
+        if (Auth::user()->tipo_usuario === 'profesor') {
+            return redirect()->route('profesor.perfil')->with('success', 'Perfil actualizado correctamente.');
+        }
+
         return redirect()->route('admin.profesores.index')->with('success', 'Profesor actualizado correctamente.');
     }
+
 
     public function destroy($idpro)
     {

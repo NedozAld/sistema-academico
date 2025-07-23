@@ -131,6 +131,10 @@ Route::middleware(['auth', 'rol:profesor'])->prefix('profesor')->name('profesor.
 
     Route::post('tutorias/{id}/confirmar', [TutoriaController::class, 'profesorConfirmar'])->name('tutorias.confirmar');
 
+    Route::get('/perfil/editar', [ProfesorController::class, 'edit'])->name('profesor.perfil.editar');
+    Route::put('/profesor/perfil/editar', [ProfesorController::class, 'update'])->name('profesor.perfil.update');
+
+
     // Futuras rutas: horario, tutorías, etc.
     // Route::get('/horario', [...])->name('horario');
     // Route::get('/tutorias', [...])->name('tutorias');
